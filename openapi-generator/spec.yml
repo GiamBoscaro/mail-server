@@ -1,0 +1,296 @@
+openapi: 3.0.0
+info:
+  contact:
+    email: support@im-tech.it
+  description: |
+    This is the Api documentation for the Nodemailer microservice.
+
+    [Repository GitLab](https://git.im-tech.it/im-tech/mail-server)
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Node Mailer Microservice
+  version: 1.0.0
+servers:
+- url: http://localhost:3000/api
+  
+tags:
+- name: mail
+  description: Handles E-Mail functionalities
+- name: utils
+  description: Utility functions for server info
+
+paths:
+
+  /mail/plain:
+    post:
+      description: |
+        Sends a plain text E-Mail
+      operationId: sendPlainText      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendPlainTextBody'            
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                type: object
+                x-content-type: application/json
+          description: OK
+        "400":
+          description: bad input parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      summary: Sends a plain text E-Mail
+      tags:
+      - mail
+    
+  /mail/html:
+    post:
+      description: |
+        Sends an HTML E-Mail from a template
+      operationId: sendHtmlTemplate      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendHtmlTemplateBody'         
+            examples:
+              raw:
+                value:
+                  to: 
+                    - test@mail.com
+                  subject: "E-Mail Subject"
+                  template:
+                    type: "raw"
+                    content: ".....Angfuih52344nvckAFnk..."
+                    encoding: byte64
+                  replacements:
+                    - key: "name"
+                      value: "Mario"
+              path:
+                value:
+                  to: 
+                    - test@mail.com
+                  subject: "E-Mail Subject"
+                  template:
+                    type: "path"
+                    content: "templates/example.html"
+                  replacements:
+                    - key: "name"
+                      value: "Mario"
+                    
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                type: object
+                x-content-type: application/json
+          description: OK
+        "400":
+          description: bad input parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      summary: Sends an HTML template E-Mail
+      tags:
+      - mail
+  
+  /utils/version:
+    get:
+      description: |
+        Checks the API version running on the server
+      operationId: getApiVersion
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+          description: OK
+        "400":
+          description: error
+      summary: API version
+      tags:
+      - utils
+
+components:
+  schemas:
+
+    SendPlainTextBody:
+      properties:
+        to:         
+          type: array
+          items:
+            type: string
+            example: "to@mail.com"       
+        cc:         
+          type: array
+          items:
+            type: string
+            example: "cc@mail.com"        
+        bcc:         
+          type: array
+          items:
+            type: string
+            example: "bcc@mail.com"
+        subject:
+          example: "E-Mail Subject"
+          type: string
+        body:
+          example: "....E-Mail Body..."
+          type: string
+      required:
+      - to
+      - subject
+      - body
+
+    SendHtmlTemplateBody:
+      properties:
+        to:         
+          type: array
+          items:
+            type: string
+            example: "to@mail.com"       
+        cc:         
+          type: array
+          items:
+            type: string
+            example: "cc@mail.com"        
+        bcc:         
+          type: array
+          items:
+            type: string
+            example: "bcc@mail.com"
+        subject:
+          example: "E-Mail Subject"
+          type: string
+        template:
+          $ref: '#/components/schemas/Template'
+        replacements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Replacements'
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+      required:
+      - to
+      - subject
+      - template
+
+    Attachment:
+      properties:
+        filename:
+          example: "sample.pdf"
+          type: string
+        content:
+          example: "...aGVsbG8gd29ybGQh..."
+          type: string
+        encoding:
+          example: "base64"
+          type: string
+          default: "utf8"
+          enum: 
+            - "ascii"
+            - "base64"
+            - "base64url"
+            - "latin1"
+            - "hex"
+            - "ucs2"
+            - "utf8"
+            - "utf16le"
+      required:
+      - filename
+      - content  
+    
+    Replacements:
+      properties:
+        key:
+          example: "name"
+          type: string
+          pattern: ^[A-Za-z]+[A-Za-z0-9_]*$
+        value:
+          example: "Mario"
+          type: string
+      required:
+      - key
+      - value
+
+    Template:
+      properties:
+        type:
+          example: "raw"
+          type: string
+          default: "raw"
+          enum: 
+            - "path"
+            - "raw"
+        content:
+          example: "...aGVsbG8gd29ybGQh..."
+          type: string
+        encoding:
+          example: "base64"
+          type: string
+          default: "utf8"
+          enum: 
+            - "base64"
+            - "utf8"
+      required:
+      - content  
+    
+    Version:
+      example:
+        patch: 0
+        major: 1
+        minor: 0
+        version: 1.0.0
+      properties:
+        major:
+          example: 1
+          type: integer
+        minor:
+          example: 0
+          type: integer
+        patch:
+          example: 0
+          type: integer
+        version:
+          example: 1.0.0
+          type: string
+      required:
+      - major
+      - minor
+      - patch
+      - version
+      type: object
+
+    Error:
+      type: object
+      properties:
+        code:
+          example: "AUTH001"
+          type: string
+        title:
+          example: "Unauthorized"
+          type: string
+        message:
+          example: "Wrong username or password"
+          type: string

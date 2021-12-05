@@ -1,0 +1,335 @@
+openapi: 3.0.0
+info:
+  contact:
+    email: support@im-tech.it
+  description: |
+    This is the Api documentation for the Nodemailer microservice.
+
+    [Repository GitLab](https://git.im-tech.it/im-tech/mail-server)
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Node Mailer Microservice
+  version: 1.0.0
+servers:
+- url: http://localhost:3000/api
+tags:
+- description: Handles E-Mail functionalities
+  name: mail
+- description: Utility functions for server info
+  name: utils
+paths:
+  /mail/plain:
+    post:
+      description: |
+        Sends a plain text E-Mail
+      operationId: sendPlainText
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendPlainTextBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: bad input parameters
+      summary: Sends a plain text E-Mail
+      tags:
+      - mail
+      x-eov-operation-handler: controllers/MailController
+  /mail/html:
+    post:
+      description: |
+        Sends an HTML E-Mail from a template
+      operationId: sendHtmlTemplate
+      requestBody:
+        content:
+          application/json:
+            examples:
+              raw:
+                value:
+                  to:
+                  - test@mail.com
+                  subject: E-Mail Subject
+                  template:
+                    type: raw
+                    content: '.....Angfuih52344nvckAFnk...'
+                    encoding: byte64
+                  replacements:
+                  - key: name
+                    value: Mario
+              path:
+                value:
+                  to:
+                  - test@mail.com
+                  subject: E-Mail Subject
+                  template:
+                    type: path
+                    content: templates/example.html
+                  replacements:
+                  - key: name
+                    value: Mario
+            schema:
+              $ref: '#/components/schemas/SendHtmlTemplateBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: bad input parameters
+      summary: Sends an HTML template E-Mail
+      tags:
+      - mail
+      x-eov-operation-handler: controllers/MailController
+  /utils/version:
+    get:
+      description: |
+        Checks the API version running on the server
+      operationId: getApiVersion
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+          description: OK
+        "400":
+          description: error
+      summary: API version
+      tags:
+      - utils
+      x-eov-operation-handler: controllers/UtilsController
+components:
+  schemas:
+    SendPlainTextBody:
+      example:
+        cc:
+        - cc@mail.com
+        - cc@mail.com
+        bcc:
+        - bcc@mail.com
+        - bcc@mail.com
+        subject: E-Mail Subject
+        to:
+        - to@mail.com
+        - to@mail.com
+        body: '....E-Mail Body...'
+      properties:
+        to:
+          items:
+            example: to@mail.com
+            type: string
+          type: array
+        cc:
+          items:
+            example: cc@mail.com
+            type: string
+          type: array
+        bcc:
+          items:
+            example: bcc@mail.com
+            type: string
+          type: array
+        subject:
+          example: E-Mail Subject
+          type: string
+        body:
+          example: '....E-Mail Body...'
+          type: string
+      required:
+      - body
+      - subject
+      - to
+    SendHtmlTemplateBody:
+      example:
+        cc:
+        - cc@mail.com
+        - cc@mail.com
+        template:
+          type: raw
+          encoding: base64
+          content: '...aGVsbG8gd29ybGQh...'
+        bcc:
+        - bcc@mail.com
+        - bcc@mail.com
+        attachments:
+        - filename: sample.pdf
+          encoding: base64
+          content: '...aGVsbG8gd29ybGQh...'
+        - filename: sample.pdf
+          encoding: base64
+          content: '...aGVsbG8gd29ybGQh...'
+        subject: E-Mail Subject
+        to:
+        - to@mail.com
+        - to@mail.com
+        replacements:
+        - value: Mario
+          key: name
+        - value: Mario
+          key: name
+      properties:
+        to:
+          items:
+            example: to@mail.com
+            type: string
+          type: array
+        cc:
+          items:
+            example: cc@mail.com
+            type: string
+          type: array
+        bcc:
+          items:
+            example: bcc@mail.com
+            type: string
+          type: array
+        subject:
+          example: E-Mail Subject
+          type: string
+        template:
+          $ref: '#/components/schemas/Template'
+        replacements:
+          items:
+            $ref: '#/components/schemas/Replacements'
+          type: array
+        attachments:
+          items:
+            $ref: '#/components/schemas/Attachment'
+          type: array
+      required:
+      - subject
+      - template
+      - to
+    Attachment:
+      example:
+        filename: sample.pdf
+        encoding: base64
+        content: '...aGVsbG8gd29ybGQh...'
+      properties:
+        filename:
+          example: sample.pdf
+          type: string
+        content:
+          example: '...aGVsbG8gd29ybGQh...'
+          type: string
+        encoding:
+          default: utf8
+          enum:
+          - ascii
+          - base64
+          - base64url
+          - latin1
+          - hex
+          - ucs2
+          - utf8
+          - utf16le
+          example: base64
+          type: string
+      required:
+      - content
+      - filename
+    Replacements:
+      example:
+        value: Mario
+        key: name
+      properties:
+        key:
+          example: name
+          pattern: ^[A-Za-z]+[A-Za-z0-9_]*$
+          type: string
+        value:
+          example: Mario
+          type: string
+      required:
+      - key
+      - value
+    Template:
+      example:
+        type: raw
+        encoding: base64
+        content: '...aGVsbG8gd29ybGQh...'
+      properties:
+        type:
+          default: raw
+          enum:
+          - path
+          - raw
+          example: raw
+          type: string
+        content:
+          example: '...aGVsbG8gd29ybGQh...'
+          type: string
+        encoding:
+          default: utf8
+          enum:
+          - base64
+          - utf8
+          example: base64
+          type: string
+      required:
+      - content
+    Version:
+      example:
+        patch: 0
+        major: 1
+        minor: 0
+        version: 1.0.0
+      properties:
+        major:
+          example: 1
+          type: integer
+        minor:
+          example: 0
+          type: integer
+        patch:
+          example: 0
+          type: integer
+        version:
+          example: 1.0.0
+          type: string
+      required:
+      - major
+      - minor
+      - patch
+      - version
+      type: object
+    Error:
+      properties:
+        code:
+          example: AUTH001
+          type: string
+        title:
+          example: Unauthorized
+          type: string
+        message:
+          example: Wrong username or password
+          type: string
+      type: object
+    inline_response_200:
+      example:
+        success: true
+      properties:
+        success:
+          type: boolean
+      type: object
+      x-content-type: application/json
