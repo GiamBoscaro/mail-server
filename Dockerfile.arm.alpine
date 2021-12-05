@@ -1,4 +1,4 @@
-FROM arm64v8/node:16.1.0-alpine3.13
+FROM arm64v8/node:14.17.5-alpine3.14
 
 WORKDIR /usr/src/app
 COPY package*.json ./
@@ -9,7 +9,7 @@ COPY . .
 
 RUN mkdir logs
 RUN touch ./logs/error.log
-RUN touch ./logs/info.log
+RUN touch ./logs/combined.log
 
 EXPOSE 3000
 CMD ["npm", "run", "start"]

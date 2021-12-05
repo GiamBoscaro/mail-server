@@ -1,4 +1,4 @@
-FROM node:14.15.4-alpine
+FROM node:14.17.5-alpine
 
 WORKDIR /usr/src/app
 COPY package*.json ./
@@ -9,7 +9,7 @@ COPY . .
 
 RUN mkdir logs
 RUN touch ./logs/error.log
-RUN touch ./logs/info.log
+RUN touch ./logs/combined.log
 
 EXPOSE 3000
 CMD ["npm", "run", "start"]
