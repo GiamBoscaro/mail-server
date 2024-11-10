@@ -1,7 +1,7 @@
+const InfoService = require('./InfoService');
 const MailService = require('./MailService');
-const UtilsService = require('./UtilsService');
 
 module.exports = {
+  InfoService,
   MailService,
-  UtilsService,
 };

@@ -23,7 +23,7 @@ module.exports = {
   // collectCoverageFrom: undefined,
 
   // The directory where Jest should output its coverage files
-  // coverageDirectory: undefined,
+  coverageDirectory: 'coverage',
 
   // An array of regexp pattern strings used to skip coverage collection
   // coveragePathIgnorePatterns: [
@@ -54,7 +54,7 @@ module.exports = {
   // forceCoverageMatch: [],
 
   // A path to a module which exports an async function that is triggered once before all test suites
-  // globalSetup: undefined,
+  globalSetup: '<rootDir>/tests/setup-tests.js',
 
   // A path to a module which exports an async function that is triggered once after all test suites
   // globalTeardown: undefined,
@@ -99,7 +99,10 @@ module.exports = {
   // projects: undefined,
 
   // Use this configuration option to add custom reporters to Jest
-  // reporters: undefined,
+  reporters: [
+    "default",
+    [ "jest-junit", { outputDirectory: "coverage" } ]
+  ],
 
   // Automatically reset mock state between every test
   // resetMocks: false,
@@ -160,10 +163,10 @@ module.exports = {
   // testRegex: [],
 
   // This option allows the use of a custom results processor
-  // testResultsProcessor: undefined,
+  // testResultsProcessor: "jest-junit",
 
   // This option allows use of a custom test runner
-  // testRunner: "jest-circus/runner",
+  testRunner: "jest-jasmine2",
 
   // This option sets the URL for the jsdom environment. It is reflected in properties such as location.href
   // testURL: "http://localhost",

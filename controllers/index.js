@@ -1,7 +1,7 @@
+const InfoController = require('./InfoController');
 const MailController = require('./MailController');
-const UtilsController = require('./UtilsController');
 
 module.exports = {
+  InfoController,
   MailController,
-  UtilsController,
 };

@@ -1,9 +1,4 @@
-**/*.config.js
-.openapi-generator
-openapi-generator
-logs
-node_modules
-public
-templates
-uploaded_files
-.env
+build
+jest.config.js
+tsconfig.json
+release.config.js

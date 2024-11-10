@@ -1,33 +1,39 @@
-/* eslint-disable no-async-promise-executor */
+/**
+ * Handlers for E-Mail APIs
+ *
+ * @summary MailService
+ * @author Giammarco Boscaro
+ *
+ * Created at     : 2024-11-10 14:05:32
+ * Last modified  : 2024-11-10 14:30:35
+ */
+
 /* eslint-disable no-unused-vars */
 const Service = require('./Service');
-const MailHelper = require('../helpers/mail').getInstance();
-const utilsHelper = require('../helpers/utils').getInstance();
-
-const infoLogger = utilsHelper.getInfoLogger('MailService');
-const errorLogger = utilsHelper.getErrorLogger('MailService');
+const { loggerService } = require('../helpers');
+const mailHelper = require('../helpers/mail').getInstance();
 
 /**
-* Sends an HTML template E-Mail
+* HTML E-Mail
 * Sends an HTML E-Mail from a template
 *
-* sendHtmlTemplateBody SendHtmlTemplateBody
-* returns inline_response_200
+* htmlEmailRequestBody HtmlEmailRequestBody HTML Email Request Body
+* returns SuccessResponse
 * */
-const sendHtmlTemplate = ({ sendHtmlTemplateBody }) => new Promise(
+const sendHtml = ({ htmlEmailRequestBody }) => new Promise(
   async (resolve, reject) => {
+    const logger = loggerService.getMethodLogger('MailService', 'sendHtml');
     try {
-      infoLogger('sendHtmlTemplate', sendHtmlTemplateBody);
-      // Transforms the array of tuples in a json dictionary that works with nodemailer
-      const replacements = utilsHelper.preProcessReplacements(sendHtmlTemplateBody.replacements);
-      const data = sendHtmlTemplateBody;
+      logger.debug('Received new HTML email to be sent', htmlEmailRequestBody);
+      const replacements = mailHelper.preProcessReplacements(htmlEmailRequestBody.replacements);
+      const data = htmlEmailRequestBody;
       data.replacements = replacements;
-      // Sends the email
-      await MailHelper.sendHtmlMessage(data);
+      await mailHelper.htmlEmail(data);
       resolve(Service.successResponse({
         success: true,
       }));
     } catch (e) {
+      logger.error('sendHtml', e.message);
       reject(Service.rejectResponse(
         e.message || 'Invalid input',
         e.status || 405,
@@ -35,23 +41,24 @@ const sendHtmlTemplate = ({ sendHtmlTemplateBody }) => new Promise(
     }
   },
 );
-
 /**
-* Sends a plain text E-Mail
+* Plain text E-Mail
 * Sends a plain text E-Mail
 *
-* sendPlainTextBody SendPlainTextBody
-* returns inline_response_200
+* plainTextEmailRequestBody PlainTextEmailRequestBody Plain Text Email Request Body
+* returns SuccessResponse
 * */
-const sendPlainText = ({ sendPlainTextBody }) => new Promise(
+const sendPlainText = ({ plainTextEmailRequestBody }) => new Promise(
   async (resolve, reject) => {
+    const logger = loggerService.getMethodLogger('MailService', 'sendPlainText');
     try {
-      infoLogger('sendPlainText', sendPlainTextBody);
-      await MailHelper.sendPlainMessage(sendPlainTextBody);
+      logger.debug('Received new plain text email to be sent', plainTextEmailRequestBody);
+      await mailHelper.plainTextEmail(plainTextEmailRequestBody);
       resolve(Service.successResponse({
         success: true,
       }));
     } catch (e) {
+      logger.error('sendPlainText', e.message);
       reject(Service.rejectResponse(
         e.message || 'Invalid input',
         e.status || 405,
@@ -61,6 +68,6 @@ const sendPlainText = ({ sendPlainTextBody }) => new Promise(
 );
 
 module.exports = {
-  sendHtmlTemplate,
+  sendHtml,
   sendPlainText,
 };

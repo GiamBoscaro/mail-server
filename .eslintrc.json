@@ -2,8 +2,27 @@
 // Copy this file, and add rule overrides as needed.
 {
   "extends": "airbnb-base",
+  "env": {
+    "node": true,
+    "browser": false,
+    "es6": true,
+    "jest": false
+  },
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "commonjs"
+  },
   "rules": {
-    "no-console": "off"
+    "no-console": "off",
+    "no-param-reassign": "off",
+    "class-methods-use-this": "off",
+    "max-classes-per-file": "off",
+    "no-plusplus": "off",
+    "no-async-promise-executor": "off"
   },
   "overrides": [
     {

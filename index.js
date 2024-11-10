@@ -1,6 +1,8 @@
 const config = require('./config');
-const logger = require('./logger');
+const { loggerService } = require('./helpers');
 const ExpressServer = require('./expressServer');
+
+const logger = loggerService.getMethodLogger('ExpressServer', 'launchServer');
 
 const launchServer = async () => {
   try {
@@ -8,7 +10,7 @@ const launchServer = async () => {
     this.expressServer.launch();
     logger.info('Express server running');
   } catch (error) {
-    logger.error('Express Server failure', error.message);
+    logger.error(`Express Server failure ${error.message}`);
     await this.close();
   }
 };
