@@ -5,7 +5,7 @@
  * @author Giammarco Boscaro
  *
  * Created at     : 2024-11-10 14:04:05
- * Last modified  : 2024-11-10 14:04:05
+ * Last modified  : 2024-11-11 20:01:35
  */
 
 const nodemailer = require('nodemailer');
@@ -35,7 +35,7 @@ class PrivateMailHelper {
    */
   connect() {
     const mailSettings = {
-      name: `sim-mailer-${config.NODE_ENV}`,
+      name: `node-mailer-${config.NODE_ENV}`,
       host: config.MAIL_HOST,
       port: config.MAIL_PORT,
       secure: config.MAIL_SECURE,

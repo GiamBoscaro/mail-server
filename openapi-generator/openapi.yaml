@@ -2,7 +2,7 @@
 openapi: 3.0.3
 info:
   contact:
-    email: giammarco.boscaro@airbus.com
+    email: giammarco.boscaro@gmail.com
   description: |
     API documentation for Node.JS mailer microservice.
     SMTP Mail microservice sends emails to the users.

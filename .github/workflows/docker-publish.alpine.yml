@@ -5,6 +5,7 @@ on:
     # Publish `main` as Docker `latest` image.
     branches:
       - main
+      - dev
 
     # Publish `v1.2.3` tags as releases.
     tags:
@@ -39,10 +40,11 @@ jobs:
       - run: npm ci
 
       - run: npm run test:ci
-      
+
   docker-build:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
+    if: github.ref == 'refs/heads/main'
+    needs: unit-tests
 
     permissions:
       contents: read

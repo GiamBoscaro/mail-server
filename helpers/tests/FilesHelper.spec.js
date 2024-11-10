@@ -6,7 +6,7 @@ const helper = require('../files').getInstance();
 describe('createFolder', () => {
   test('Creates a new folder', (done) => {
     // Prepares test environment
-    const directoryPath = path.join(process.cwd(), 'tests', 'out');
+    const directoryPath = path.join(process.cwd(), 'tests', 'tmp');
     try {
       fs.rmdirSync(directoryPath, { force: true });
     } catch (e) {
@@ -21,7 +21,7 @@ describe('createFolder', () => {
   });
   test('Try to create a folder that already exist', (done) => {
     // Prepares test environment
-    const directoryPath = path.join(process.cwd(), 'tests', 'out');
+    const directoryPath = path.join(process.cwd(), 'tests', 'tmp');
     try {
       fs.rmdirSync(directoryPath, { force: true });
     } catch (e) {
@@ -40,7 +40,7 @@ describe('createFolder', () => {
 
 describe('writeFile', () => {
   test('Write some content to a file', (done) => {
-    const filePath = path.join(process.cwd(), 'tests', 'out', 'test.txt');
+    const filePath = path.join(process.cwd(), 'tests', 'tmp', 'test.txt');
     try {
       fs.rmSync(filePath, { force: true });
     } catch (e) {
@@ -49,7 +49,7 @@ describe('writeFile', () => {
     const res = helper.writeFile('This is a test file', filePath);
     expect(res).toBeDefined();
     expect(res).toBe(true);
-    const content = helper.readFile(path.join(process.cwd(), 'tests', 'out', 'test.txt'));
+    const content = helper.readFile(path.join(process.cwd(), 'tests', 'tmp', 'test.txt'));
     expect(content).toBeDefined();
     expect(content).toBe('This is a test file');
     done();
@@ -58,7 +58,7 @@ describe('writeFile', () => {
 
 describe('readFile', () => {
   test('Read the content of a file', (done) => {
-    const filePath = path.join(process.cwd(), 'tests', 'out', 'test.txt');
+    const filePath = path.join(process.cwd(), 'tests', 'tmp', 'test.txt');
     try {
       fs.rmSync(filePath, { force: true });
     } catch (e) {
@@ -76,7 +76,7 @@ describe('readFile', () => {
 
 describe('deleteFile', () => {
   test('Delete a file', (done) => {
-    const filePath = path.join(process.cwd(), 'tests', 'out', 'delete_this.txt');
+    const filePath = path.join(process.cwd(), 'tests', 'tmp', 'delete_this.txt');
     try {
       fs.rmSync(filePath, { force: true });
     } catch (e) {
