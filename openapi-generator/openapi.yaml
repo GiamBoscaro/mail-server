@@ -1,0 +1,433 @@
+---
+openapi: 3.0.3
+info:
+  contact:
+    email: giammarco.boscaro@gmail.com
+  description: |
+    API documentation for Node.JS mailer microservice.
+    SMTP Mail microservice sends emails to the users.
+
+    [Repository](https://github.com/GiamBoscaro/mail-server.git)
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: MAILER
+  version: 1.0.0
+servers:
+- description: localhost
+  url: http://localhost:3000
+tags:
+- description: Handles E-Mail functionalities
+  name: Mail
+- description: Service status and info
+  name: Info
+
+paths:
+
+  #####################
+  ####### MAIL ########
+  #####################
+
+  /mail/plain:
+    post:
+      operationId: sendPlainText
+      tags:
+        - Mail
+      summary: Plain text E-Mail
+      description: |
+        Sends a plain text E-Mail
+      security: []
+      requestBody:
+        description: Plain Text Email Request Body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlainTextEmailRequestBody'
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/UnprocessableContent'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  /mail/html:
+    post:
+      operationId: sendHtml
+      tags:
+        - Mail
+      summary: HTML E-Mail
+      description: |
+        Sends an HTML E-Mail from a template
+      security: []
+      requestBody:
+        description: HTML Email Request Body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HtmlEmailRequestBody'        
+            examples:
+              raw:
+                value:
+                  to: 
+                    - test@mail.com
+                  subject: "E-Mail Subject"
+                  template:
+                    type: "raw"
+                    content: ".....Angfuih52344nvckAFnk..."
+                    encoding: base64
+                  replacements:
+                    - key: "name"
+                      value: "Mario"
+              path:
+                value:
+                  to: 
+                    - test@mail.com
+                  subject: "E-Mail Subject"
+                  template:
+                    type: "path"
+                    content: "templates/example.html"
+                  replacements:
+                    - key: "name"
+                      value: "Mario"
+      responses:
+        "200":
+          $ref: '#/components/responses/SuccessResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "422":
+          $ref: '#/components/responses/UnprocessableContent'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+
+  #####################
+  ####### INFO ########
+  #####################
+
+  /info/version:  
+    get:
+      operationId: version
+      tags:
+      - Info
+      summary: Server version
+      description: |
+        Returns the server version running
+      security: []
+      responses:
+        "200":
+          $ref: '#/components/responses/VersionResponse'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+  
+components:
+
+  responses:
+
+    ### MAIL ###
+
+    SuccessResponse:
+      description: Operation completed successfully
+      content:
+        application/json:
+          schema:
+            properties:
+              success:
+                type: boolean
+                example: true
+            required:
+            - success
+
+    ### INFO ###
+
+    VersionResponse:
+      description: Server version
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Version"
+
+    ### ERRORS ###
+
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: 400
+            message:
+              code: AUTH001
+              message: Bad Request
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: 401
+            message:
+              code: AUTH001
+              message: Please Authenticate
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: 403
+            message:
+              code: AUTH001
+              message: Forbidden
+
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: 404
+            message:
+              code: AUTH001
+              message: Not Found
+
+    UnprocessableContent:
+      description: Unprocessable Content
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: 422
+            message:
+              code: AUTH001
+              message: Unprocessable Content
+              
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: 500
+            message:
+              code: AUTH001
+              message: Internal Server Error
+
+    ServiceUnavailable:
+      description: Service Unavailable
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: 503
+            message:
+              code: AUTH001
+              message: Service Unavailable
+
+  schemas:
+
+    ### MAIL ###
+
+    EmailHeader:
+      type: object
+      required:
+        - to
+        - subject
+      properties:
+        from:         
+          type: string
+          example: "from@mail.com" 
+        to:         
+          type: array
+          items:
+            type: string
+            example: "to@mail.com"       
+        cc:         
+          type: array
+          items:
+            type: string
+            example: "cc@mail.com"        
+        bcc:         
+          type: array
+          items:
+            type: string
+            example: "bcc@mail.com"
+        subject:
+          example: "E-Mail Subject"
+          type: string
+
+    PlainTextEmailRequestBody:
+      allOf:
+        - $ref: '#/components/schemas/EmailHeader'
+      type: object
+      required:
+        - to
+        - subject
+        - body     
+      properties:
+        body:
+          example: "This is an email message"
+          type: string
+
+    HtmlEmailRequestBody:
+      allOf:
+        - $ref: '#/components/schemas/EmailHeader'
+      required:
+        - to
+        - subject
+        - template
+      properties:
+        template:
+          $ref: '#/components/schemas/EmailTemplate'
+        replacements:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/EmailReplacements'
+        attachments:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/EmailAttachment'
+
+    EmailAttachment:
+      required:
+        - filename
+        - content  
+      properties:
+        filename:
+          example: "sample.pdf"
+          type: string
+        content:
+          example: "...aGVsbG8gd29ybGQh..."
+          type: string
+        encoding:
+          example: "base64"
+          type: string
+          default: "utf8"
+          enum: 
+            - "ascii"
+            - "base64"
+            - "base64url"
+            - "latin1"
+            - "hex"
+            - "ucs2"
+            - "utf8"
+            - "utf16le"
+    
+    EmailReplacements:
+      required:
+        - key
+        - value
+      properties:
+        key:
+          example: "name"
+          type: string
+          pattern: ^[A-Za-z]+[A-Za-z0-9_]*$
+        value:
+          example: "Mario"
+          type: string
+
+    EmailTemplate:
+      required:
+        - content  
+      properties:
+        content:
+          example: "...aGVsbG8gd29ybGQh..."
+          description: |
+            Either the path to the template or an HTML Base64 encoded
+          type: string
+        type:
+          example: "raw"
+          type: string
+          default: "raw"
+          enum: 
+            - "path"
+            - "raw"
+        encoding:
+          example: "base64"
+          type: string
+          default: "utf8"
+          enum: 
+            - "base64"
+            - "utf8"
+   
+    ### INFO ###
+
+    Version:
+      type: object
+      example:
+        patch: 0
+        major: 1
+        minor: 0
+        version: 1.0.0
+      properties:
+        major:
+          example: 1
+          type: integer
+        minor:
+          example: 0
+          type: integer
+        patch:
+          example: 0
+          type: integer
+        version:
+          example: 1.0.0
+          type: string
+      required:
+      - major
+      - minor
+      - patch
+      - version
+
+    ### ERRORS ###
+
+    Error:
+      type: object
+      properties:
+        status:
+          type: number
+          example: 401
+        timestamp:
+          type: string
+          format: date-time
+        path:
+          type: string
+          example: /api/login
+        message:
+          type: object
+          properties:
+            code:
+              type: string
+              example: AUTH001
+            message:
+              type: string  
+              example: User is not authenticated
+      required:
+        - status
+        - message

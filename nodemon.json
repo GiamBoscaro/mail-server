@@ -1,3 +1,16 @@
-{   
-    "ignore": ["*.test.js", "*.spec.js", "openapi-generator/*"] 
-}
+{
+    "ext": "js,json",
+    "verbose": false,
+    "watch": [ "." ],
+    "ignore": [
+      "\\.git",
+      "node_modules/*",
+      "public/*",
+      "tests/*",
+      "logs/*",
+      "uploaded_files/*",
+      "node_modules/.*.*/node_modules"
+    ],
+    "exec": "node",
+    "script": "index.js"
+  }

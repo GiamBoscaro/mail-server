@@ -4,15 +4,15 @@ README.md
 api/openapi.yaml
 config.js
 controllers/Controller.js
+controllers/InfoController.js
 controllers/MailController.js
-controllers/UtilsService.js
 controllers/index.js
 expressServer.js
 index.js
 logger.js
 package.json
+services/InfoService.js
 services/MailService.js
 services/Service.js
-services/UtilsService.js
 services/index.js
 utils/openapiRouter.js

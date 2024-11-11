@@ -1,74 +1,77 @@
-/* eslint-disable class-methods-use-this */
-/* eslint-disable max-classes-per-file */
+/**
+ * Handles files to send as E-Mail attachments
+ *
+ * @summary Files Helper
+ * @author Giammarco Boscaro
+ *
+ * Created at     : 2024-11-10 14:04:20
+ * Last modified  : 2024-11-11 20:44:53
+ */
+
 const fs = require('fs');
-const path = require('path');
-const utilsHelper = require('./utils').getInstance();
+const { loggerService } = require('.');
 
-const infoLogger = utilsHelper.getInfoLogger('FileUtilsHelper');
-const errorLogger = utilsHelper.getErrorLogger('FileUtilsHelper');
+const logger = loggerService.getClassLogger('FilesHelper');
 
-class PrivateFileUtilsHelper {
-  constructor() {
-    infoLogger('constructor', 'LOADED');
-  }
+/**
+ * Creates a new folder in the desired path
+ * @param {string} dirPath
+ * @returns {boolean} true if successful
+ */
+function createFolder(dirPath) {
+  return fs.mkdirSync(dirPath, true);
+}
 
-  createFolder(dirPath) {
-    fs.mkdirSync(dirPath, (err) => {
-      if (err) return errorLogger('createFolder', err.message);
-      infoLogger('createFolder', 'New directory successfully created.');
-      return true;
-    });
-  }
-
-  cleanFileName(fileName) {
-    return fileName.trim().toLowerCase().replace(/\s/g, '_');
-  }
-
-  getFileExtension(filePath) {
-    return path.parse(filePath).ext.split('.').pop();
-  }
-
-  writeFile(fileContent, targetPath, encoding) {
-    try {
-      fs.writeFileSync(targetPath, fileContent, encoding || 'utf8');
-      return true;
-    } catch (e) {
-      errorLogger('writeFile', e.message);
-      return false;
-    }
-  }
-
-  deleteFile(filePath) {
-    try {
-      fs.unlinkSync(filePath);
-      return true;
-    } catch (e) {
-      errorLogger('deleteFile', e.message);
-      return false;
-    }
-  }
-
-  readFile(filePath, encoding) {
-    try {
-      return fs.readFileSync(filePath, encoding || 'utf8');
-    } catch (e) {
-      errorLogger('readFile', e.message);
-      return null;
-    }
+/**
+ * Write a file in the specified path
+ * @param {string} fileContent
+ * @param {string} targetPath
+ * @param {string} encoding
+ * @returns {boolean} true if successful
+ */
+function writeFile(fileContent, targetPath, encoding) {
+  try {
+    fs.writeFileSync(targetPath, fileContent, encoding || 'utf8');
+    return true;
+  } catch (e) {
+    logger.error('writeFile', e.message);
+    return false;
   }
 }
 
-class FileUtilsHelper {
-  constructor() {
-    throw new Error('use FileUtilsHelper.getInstance()');
-  }
-
-  static getInstance() {
-    if (!FileUtilsHelper.instance) {
-      FileUtilsHelper.instance = new PrivateFileUtilsHelper();
-    }
-    return FileUtilsHelper.instance;
+/**
+ * Deletes a file in the specified path
+ * @param {string} filePath
+ * @returns {boolean} true if successful
+ */
+function deleteFile(filePath) {
+  try {
+    fs.unlinkSync(filePath);
+    return true;
+  } catch (e) {
+    logger.error('deleteFile', e.message);
+    return false;
   }
 }
 
-module.exports = FileUtilsHelper;
+/**
+ * Read the content of a file
+ * @param {string} filePath
+ * @param {string} encoding
+ * @returns {string} file content
+ */
+function readFile(filePath, encoding) {
+  try {
+    return fs.readFileSync(filePath, encoding || 'utf8');
+  } catch (e) {
+    logger.error('readFile', e.message);
+    return null;
+  }
+}
+
+module.exports = {
+  readFile,
+  writeFile,
+  deleteFile,
+  createFolder,
+};

@@ -31,23 +31,27 @@ class Controller {
       return;
     }
 
-    // Redirect
+    // Send Redirect Response
+    // FEATURE: Added redirect support, was missing on the generated code
     if (responseType === 'redirect') {
       const url = new URL(responsePayload.url);
       const queryParams = payload.params ? payload.params : {};
       // Add query parameters to URL
       // eslint-disable-next-line no-restricted-syntax
-      for (const [key, value] of Object.entries(queryParams)) url.searchParams.append(key, value);
+      for (const [key, value] of Object.entries(queryParams)) {
+        url.searchParams.append(key, value);
+      }
 
       if (responsePayload instanceof Object) { response.redirect(url.href); }
       return;
     }
 
     // Send File as Response
-    // TODO: Al momento non funziona ERR_HTTP_INVALID_STATUS_CODE ERR_INVALID_ARG_TYPE
+    // FEATURE: Added file response, was missing on the generated code
+    // TODO: Not working because ERR_HTTP_INVALID_STATUS_CODE ERR_INVALID_ARG_TYPE
     if (responseType === 'file' || responseType === 'html' || responseType === 'text') {
       response.setHeader('Content-Type', `text/${responseType}`);
-      if (responsePayload instanceof Object) response.sendFile(responsePayload.path);
+      if (responsePayload instanceof Object) { response.sendFile(responsePayload.path); }
       return;
     }
 
@@ -83,8 +87,10 @@ class Controller {
         const extension = fileArray.pop();
         fileArray.push(`_${Date.now()}`);
         uploadedFileName = `${fileArray.join('')}.${extension}`;
-        fs.renameSync(path.join(config.FILE_UPLOAD_PATH, fileObject.filename),
-          path.join(config.FILE_UPLOAD_PATH, uploadedFileName));
+        fs.renameSync(
+          path.join(config.FILE_UPLOAD_PATH, fileObject.filename),
+          path.join(config.FILE_UPLOAD_PATH, uploadedFileName),
+        );
       }
     }
     return uploadedFileName;
@@ -104,6 +110,7 @@ class Controller {
 
   static collectRequestParams(request) {
     const requestParams = {};
+    // FIX: for openapi-validator >= 4.10. Must change requestBody !== undefined to null
     if (request.openapi.schema.requestBody !== undefined) {
       const { content } = request.openapi.schema.requestBody;
       if (content['application/json'] !== undefined) {
@@ -122,18 +129,21 @@ class Controller {
         );
       }
     }
-
-    request.openapi.schema.parameters.forEach((param) => {
-      if (param.in === 'path') {
-        requestParams[param.name] = request.openapi.pathParams[param.name];
-      } else if (param.in === 'query') {
-        requestParams[param.name] = request.query[param.name];
-      } else if (param.in === 'header') {
-        requestParams[camelCase(param.name)] = request.headers[param.name];
-      } else if (param.in === 'cookie') { // Aggiunto supporto ai cookies
-        requestParams[param.name] = request.cookies[param.name];
-      }
-    });
+    // FIX: for openapi-validator >= 4. Must check that parameters is defined
+    if (request.openapi.schema.parameters !== undefined) {
+      request.openapi.schema.parameters.forEach((param) => {
+        if (param.in === 'path') {
+          requestParams[param.name] = request.openapi.pathParams[param.name];
+        } else if (param.in === 'query') {
+          requestParams[param.name] = request.query[param.name];
+        } else if (param.in === 'header') {
+          requestParams[camelCase(param.name)] = request.headers[param.name];
+        // FEATURE: Added cookies support, was missing on the generated code
+        } else if (param.in === 'cookie') {
+          requestParams[param.name] = request.cookies[param.name];
+        }
+      });
+    }
     return requestParams;
   }
 

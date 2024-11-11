@@ -1,19 +1,27 @@
 # Created by https://www.toptal.com/developers/gitignore/api/vscode,node,webstorm
 # Edit at https://www.toptal.com/developers/gitignore?templates=vscode,node,webstorm
 
-# Open API
+TODO.md
+.env
+tests/test.env
+tests/out
+
+### CI/CD ###
+tests/data
+tests/prestart.py
+
+### Open API ###
 uploaded_files
 openapi-generator/out
+openapi-generator/vc-openapi
 
-# Temp folders
+### Temp folder ###
 _temp
 temp
 .temp
-dev
+tmp
 
-# Env
-.env
-
+### Node ###
 # Logs
 *.log
 logs
@@ -124,6 +132,7 @@ dist
 .vscode-test
 
 ### vscode ###
+.vscode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
