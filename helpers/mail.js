@@ -5,7 +5,7 @@
  * @author Giammarco Boscaro
  *
  * Created at     : 2024-11-10 14:04:05
- * Last modified  : 2024-11-11 20:01:35
+ * Last modified  : 2024-11-11 20:12:40
  */
 
 const nodemailer = require('nodemailer');
@@ -36,10 +36,16 @@ class PrivateMailHelper {
   connect() {
     const mailSettings = {
       name: `node-mailer-${config.NODE_ENV}`,
+      service: 'mail',
       host: config.MAIL_HOST,
       port: config.MAIL_PORT,
+      //   secureConnection: process.env.SECURE,
       secure: config.MAIL_SECURE,
       ignoreTLS: !config.MAIL_SECURE,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASSWORD,
+      },
     };
     logger.info('connect', mailSettings);
     this.client = nodemailer.createTransport(mailSettings);
