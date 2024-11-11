@@ -14,8 +14,6 @@ const fs = require('fs');
 const Service = require('./Service');
 const { loggerService } = require('../helpers');
 
-const logger = loggerService.getClassLogger('InfoService');
-
 /**
 * Server version
 * Returns the server version running
@@ -24,8 +22,8 @@ const logger = loggerService.getClassLogger('InfoService');
 * */
 const version = () => new Promise(
   async (resolve, reject) => {
+    const logger = loggerService.getMethodLogger('InfoService', 'version');
     try {
-      logger.debug('version');
       const filename = 'package.json';
       const absPath = path.join(process.cwd(), filename);
 
@@ -48,7 +46,7 @@ const version = () => new Promise(
         return resolve(Service.successResponse(v));
       });
     } catch (e) {
-      logger.error('version', e.message);
+      logger.error(e.message);
       reject(Service.rejectResponse(
         e.message || 'Invalid input',
         e.status || 405,

@@ -5,7 +5,7 @@
  * @author Giammarco Boscaro
  *
  * Created at     : 2024-11-10 14:05:32
- * Last modified  : 2024-11-11 20:43:55
+ * Last modified  : 2024-11-11 20:55:18
  */
 
 /* eslint-disable no-unused-vars */
@@ -25,15 +25,18 @@ const sendHtml = ({ htmlEmailRequestBody }) => new Promise(
     const logger = loggerService.getMethodLogger('MailService', 'sendHtml');
     try {
       logger.debug('Received new HTML email to be sent', htmlEmailRequestBody);
+
       const replacements = mailHelper.preProcessReplacements(htmlEmailRequestBody.replacements);
       const data = htmlEmailRequestBody;
       data.replacements = replacements;
+
       await mailHelper.htmlEmail(data);
+
       resolve(Service.successResponse({
         success: true,
       }));
     } catch (e) {
-      logger.error('sendHtml', e.message);
+      logger.error(e.message);
       reject(Service.rejectResponse(
         e.message || 'Invalid input',
         e.status || 405,
@@ -53,12 +56,14 @@ const sendPlainText = ({ plainTextEmailRequestBody }) => new Promise(
     const logger = loggerService.getMethodLogger('MailService', 'sendPlainText');
     try {
       logger.debug('Received new plain text email to be sent', plainTextEmailRequestBody);
+
       await mailHelper.plainTextEmail(plainTextEmailRequestBody);
+
       resolve(Service.successResponse({
         success: true,
       }));
     } catch (e) {
-      logger.error('sendPlainText', e.message);
+      logger.error(e.message);
       reject(Service.rejectResponse(
         e.message || 'Invalid input',
         e.status || 405,
