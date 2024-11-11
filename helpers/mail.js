@@ -5,7 +5,7 @@
  * @author Giammarco Boscaro
  *
  * Created at     : 2024-11-10 14:04:05
- * Last modified  : 2024-11-11 20:25:17
+ * Last modified  : 2024-11-11 20:38:49
  */
 
 const nodemailer = require('nodemailer');
@@ -39,9 +39,7 @@ class PrivateMailHelper {
       service: 'mail',
       host: config.MAIL_HOST,
       port: config.MAIL_PORT,
-      //   secureConnection: process.env.SECURE,
       secure: config.MAIL_SECURE,
-      ignoreTLS: !config.MAIL_SECURE,
       auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASSWORD,
