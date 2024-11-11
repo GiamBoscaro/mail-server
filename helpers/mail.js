@@ -5,7 +5,7 @@
  * @author Giammarco Boscaro
  *
  * Created at     : 2024-11-10 14:04:05
- * Last modified  : 2024-11-11 20:12:40
+ * Last modified  : 2024-11-11 20:25:17
  */
 
 const nodemailer = require('nodemailer');
@@ -47,7 +47,7 @@ class PrivateMailHelper {
         pass: process.env.MAIL_PASSWORD,
       },
     };
-    logger.info('connect', mailSettings);
+    logger.info('connect', { ...mailSettings, auth: null });
     this.client = nodemailer.createTransport(mailSettings);
   }
 
