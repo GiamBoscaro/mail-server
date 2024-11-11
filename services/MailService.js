@@ -5,13 +5,13 @@
  * @author Giammarco Boscaro
  *
  * Created at     : 2024-11-10 14:05:32
- * Last modified  : 2024-11-10 14:30:35
+ * Last modified  : 2024-11-11 20:43:55
  */
 
 /* eslint-disable no-unused-vars */
 const Service = require('./Service');
 const { loggerService } = require('../helpers');
-const mailHelper = require('../helpers/mail').getInstance();
+const mailHelper = require('../helpers/mail');
 
 /**
 * HTML E-Mail

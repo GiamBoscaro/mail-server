@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const isHtml = require('is-html');
-const helper = require('../mail').getInstance();
+const helper = require('../mail');
 
 describe('preProcessReplacements', () => {
   test('Processes the list of replacements', (done) => {

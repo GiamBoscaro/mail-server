@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 const path = require('path');
 const fs = require('fs');
-const helper = require('../files').getInstance();
+const helper = require('../files');
 
 describe('createFolder', () => {
   test('Creates a new folder', (done) => {
