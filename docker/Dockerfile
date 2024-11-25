@@ -1,4 +1,4 @@
-FROM arm64v8/node:16-alpine
+FROM node:16
 
 ARG DEFAULT_PORT=3000
 

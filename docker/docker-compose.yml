@@ -3,7 +3,7 @@ version: '3.8'
 services:
   
   mailer:  
-    image: registry.gitlab.com/im-technologies/mail-server:latest
+    image: ghcr.io/giamboscaro/mail-service:latest
     restart: unless-stopped
     ports:
       - 3000:3000
