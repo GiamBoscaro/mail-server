@@ -5,6 +5,7 @@ TODO.md
 .env
 tests/test.env
 tests/out
+.DS_Store
 
 ### CI/CD ###
 tests/data

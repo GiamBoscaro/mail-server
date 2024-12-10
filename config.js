@@ -15,6 +15,8 @@ const config = {
   // SMTP
   MAIL_HOST: process.env.MAIL_HOST,
   MAIL_USER: process.env.MAIL_USER,
+  MAIL_FROM: process.env.MAIL_FROM,
+  MAIL_PASSWORD: process.env.MAIL_PASSWORD,
   MAIL_PORT: process.env.MAIL_PORT ? parseFloat(process.env.MAIL_PORT, 10) : 25,
   MAIL_SECURE: process.env.MAIL_SECURE === 'true' || false,
   MAX_FILE_SIZE: process.env.MAX_FILE_SIZE ? parseFloat(process.env.MAX_FILE_SIZE, 10) : 10,

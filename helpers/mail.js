@@ -5,7 +5,7 @@
  * @author Giammarco Boscaro
  *
  * Created at     : 2024-11-10 14:04:05
- * Last modified  : 2024-11-11 20:45:49
+ * Last modified  : 2024-12-10 19:04:08
  */
 
 const nodemailer = require('nodemailer');
@@ -37,8 +37,8 @@ function connect() {
     port: config.MAIL_PORT,
     secure: config.MAIL_SECURE,
     auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASSWORD,
+      user: config.MAIL_USER,
+      pass: config.MAIL_PASSWORD,
     },
   };
   logger.info('connect', { ...mailSettings, auth: null });
@@ -116,7 +116,7 @@ function loadTemplate(data) {
  */
 function buildHeader(data) {
   return {
-    from: data.from || process.env.MAIL_USER,
+    from: data.from || config.MAIL_FROM,
     to: data.to.join(','),
     cc: data.cc ? data.cc.join(',') : [],
     bcc: data.bcc ? data.bcc.join(',') : [],
