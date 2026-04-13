@@ -101,17 +101,24 @@ class Controller {
     if (codeGenDefinedBodyName !== undefined) {
       return codeGenDefinedBodyName;
     }
-    const refObjectPath = request.openapi.schema.requestBody.content['application/json'].schema.$ref;
-    if (refObjectPath !== undefined && refObjectPath.length > 0) {
-      return (refObjectPath.substr(refObjectPath.lastIndexOf('/') + 1));
+    const schema = request.openapi.schema.requestBody.content['application/json'].schema;
+    if (schema.$ref !== undefined && schema.$ref.length > 0) {
+      return (schema.$ref.substr(schema.$ref.lastIndexOf('/') + 1));
+    }
+    // FEATURE: if the schema has a title, we use that as name
+    if (schema.title !== undefined && schema.title.length > 0) {
+      return schema.title;
     }
     return 'body';
   }
 
   static collectRequestParams(request) {
     const requestParams = {};
+    // DEBUG: Log the openapi schema structure
+    // console.log('request.openapi.schema:', JSON.stringify(request.openapi.schema, null, 2));
+
     // FIX: for openapi-validator >= 4.10. Must change requestBody !== undefined to null
-    if (request.openapi.schema.requestBody !== undefined) {
+    if (request.openapi.schema.requestBody !== undefined && request.openapi.schema.requestBody !== null) {
       const { content } = request.openapi.schema.requestBody;
       if (content['application/json'] !== undefined) {
         const requestBodyName = camelCase(this.getRequestBodyName(request));

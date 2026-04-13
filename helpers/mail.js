@@ -57,14 +57,15 @@ function getClient() {
  * @param {any} options
  * @returns {Promise} response
  */
-function sendMail(options) {
-  return new Promise((resolve, reject) => {
-    getClient().sendMail(options, (error, info) => {
-      if (error) return reject(error);
-      logger.info('sendMail', info.response);
-      return resolve(info);
-    });
-  });
+async function sendMail(options) {
+  try {
+    const info = await getClient().sendMail(options);
+    logger.info('sendMail', info.response);
+    return info;
+  } catch (error) {
+    logger.error('sendMail failure', error.message);
+    throw error;
+  }
 }
 
 /**
@@ -72,31 +73,30 @@ function sendMail(options) {
  * @param {{key: string, value: string}[]} replacements
  * @returns {any}
  */
-function preProcessReplacements(replacements) {
+const preProcessReplacements = (replacements) => {
   const json = {};
   if (replacements) {
-    replacements.forEach((element) => {
-      json[element.key] = element.value;
+    replacements.forEach(({ key, value }) => {
+      json[key] = value;
     });
   }
   return json;
-}
+};
 
 /**
  * Loads a template either from the file system
  * or from the base64 content of the request, based
  * on the content type
  * @param {any} data
- * @returns {Buffer} template content
+ * @returns {string|Buffer} template content
  */
-function loadTemplate(data) {
+async function loadTemplate(data) {
   logger.silly('loadTemplate', data);
   try {
     const { type, encoding, content } = data;
     if (type === TemplateType.PATH) {
       const filePath = path.join(config.ASSETS_PATH, content);
-      const fileContent = fs.readFileSync(filePath, 'utf8');
-      return fileContent;
+      return await fs.promises.readFile(filePath, 'utf8');
     }
     if (type === TemplateType.RAW) {
       return Buffer.from(content, encoding);
@@ -104,7 +104,7 @@ function loadTemplate(data) {
     throw new Error(`Unsupported template type ${type}`);
   } catch (e) {
     logger.error('loadTemplate', e.message);
-    return null;
+    throw e;
   }
 }
 
@@ -114,33 +114,26 @@ function loadTemplate(data) {
  * @param {any} data
  * @returns {any} email header
  */
-function buildHeader(data) {
-  return {
-    from: data.from || config.MAIL_FROM,
-    to: data.to.join(','),
-    cc: data.cc ? data.cc.join(',') : [],
-    bcc: data.bcc ? data.bcc.join(',') : [],
-    subject: data.subject,
-  };
-}
+const buildHeader = (data) => ({
+  from: data.from || config.MAIL_FROM,
+  to: data.to.join(','),
+  cc: data.cc ? data.cc.join(',') : [],
+  bcc: data.bcc ? data.bcc.join(',') : [],
+  subject: data.subject,
+});
 
 /**
  * Sends a plain text email
  * @param {any} data
  * @returns {Promise} response
  */
-function plainTextEmail(data) {
+async function plainTextEmail(data) {
   logger.silly('plainTextEmail', data);
-  try {
-    const mailOptions = {
-      ...buildHeader(data),
-      text: data.body,
-    };
-    return sendMail(mailOptions);
-  } catch (e) {
-    logger.error('plainTextEmail', e.message);
-    throw e;
-  }
+  const mailOptions = {
+    ...buildHeader(data),
+    text: data.body,
+  };
+  return sendMail(mailOptions);
 }
 
 /**
@@ -149,24 +142,21 @@ function plainTextEmail(data) {
  * @param {any} data
  * @returns {Promise} response
  */
-function htmlEmail(data) {
+async function htmlEmail(data) {
   logger.silly('htmlEmail', data);
-  try {
-    const fileContent = loadTemplate(data.template);
-    if (!isHtml(fileContent)) { throw new Error('The template file content is not HTML'); }
-    const template = handlebars.compile(fileContent.toString());
-    const compiledHtml = template(data.replacements || {});
-    const mailOptions = {
-      ...buildHeader(data),
-      text: data.body,
-      html: compiledHtml,
-      attachments: data.attachments || null,
-    };
-    return sendMail(mailOptions);
-  } catch (e) {
-    logger.error('htmlEmail', e);
-    throw e;
+  const fileContent = await loadTemplate(data.template);
+  if (!isHtml(fileContent.toString())) {
+    throw new Error('The template file content is not HTML');
   }
+  const template = handlebars.compile(fileContent.toString());
+  const compiledHtml = template(data.replacements || {});
+  const mailOptions = {
+    ...buildHeader(data),
+    text: data.body,
+    html: compiledHtml,
+    attachments: data.attachments || null,
+  };
+  return sendMail(mailOptions);
 }
 
 module.exports = {

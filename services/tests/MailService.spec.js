@@ -6,7 +6,7 @@ beforeEach(() => {
 });
 
 describe('sendPlainText', () => {
-  test('Sends a simple text email', async (done) => {
+  test('Sends a simple text email', async () => {
     // MOCKs
 
     const data = {
@@ -31,33 +31,35 @@ describe('sendPlainText', () => {
     expect(response.payload).toStrictEqual({ success: true });
 
     expect(plainTextEmailMock).toHaveBeenCalledWith(data);
-
-    done();
   });
 
-  test('Fails because error while inserting notification in the database', async (done) => {
+  test('Fails because error while inserting notification in the database', async () => {
     const plainTextEmailMock = jest
       .spyOn(mailHelper, 'plainTextEmail')
-      .mockRejectedValue(() => { throw new Error('Cannot send email'); });
+      .mockRejectedValue(new Error('Cannot send email'));
 
     try {
       const { sendPlainText } = require('../MailService');
-      const response = await sendPlainText({
-        sendPlainTextRequestBody: {},
+      await sendPlainText({
+        plainTextEmailRequestBody: {
+          from: 'g.boscaro@im-tech.it',
+          to: [
+            'gimmy94.boscaro@gmail.com',
+          ],
+          subject: 'E-Mail Subject',
+          body: 'This is an email message',
+        },
       });
-      done(response);
+      throw new Error('Should have thrown an error');
     } catch (e) {
       expect(e.code).toBe(405);
-
       expect(plainTextEmailMock).toHaveBeenCalled();
-
-      done();
     }
   });
 });
 
 describe('sendHtml', () => {
-  test('Sends a simple text email', async (done) => {
+  test('Sends a simple text email', async () => {
     // MOCKs
 
     const data = {
@@ -81,30 +83,31 @@ describe('sendHtml', () => {
     expect(response.code).toBe(200);
     expect(response.payload).toStrictEqual({ success: true });
 
-    expect(htmlEmailMock).toHaveBeenCalledWith(data);
-
-    done();
+    expect(htmlEmailMock).toHaveBeenCalledWith({ ...data, replacements: {} });
   });
 
-  test('Fails because error while inserting notification in the database', async (done) => {
+  test('Fails because error while inserting notification in the database', async () => {
     const htmlEmailMock = jest
       .spyOn(mailHelper, 'htmlEmail')
-      .mockRejectedValue(() => { throw new Error('Cannot send email'); });
+      .mockRejectedValue(new Error('Cannot send email'));
 
     try {
       const { sendHtml } = require('../MailService');
-      const response = await sendHtml({
+      await sendHtml({
         htmlEmailRequestBody: {
+          from: 'g.boscaro@im-tech.it',
+          to: [
+            'gimmy94.boscaro@gmail.com',
+          ],
+          subject: 'E-Mail Subject',
+          body: 'This is an email message',
           replacements: [],
         },
       });
-      done(response);
+      throw new Error('Should have thrown an error');
     } catch (e) {
       expect(e.code).toBe(405);
-
       expect(htmlEmailMock).toHaveBeenCalled();
-
-      done();
     }
   });
 });

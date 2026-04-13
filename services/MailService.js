@@ -20,30 +20,32 @@ const mailHelper = require('../helpers/mail');
 * htmlEmailRequestBody HtmlEmailRequestBody HTML Email Request Body
 * returns SuccessResponse
 * */
-const sendHtml = ({ htmlEmailRequestBody }) => new Promise(
-  async (resolve, reject) => {
-    const logger = loggerService.getMethodLogger('MailService', 'sendHtml');
-    try {
-      logger.debug('Received new HTML email to be sent', htmlEmailRequestBody);
+const sendHtml = async (params) => {
+  const htmlEmailRequestBody = params.htmlEmailRequestBody || params.body;
+  const logger = loggerService.getMethodLogger('MailService', 'sendHtml');
+  try {
+    logger.debug('Received new HTML email to be sent', htmlEmailRequestBody);
 
-      const replacements = mailHelper.preProcessReplacements(htmlEmailRequestBody.replacements);
-      const data = htmlEmailRequestBody;
-      data.replacements = replacements;
-
-      await mailHelper.htmlEmail(data);
-
-      resolve(Service.successResponse({
-        success: true,
-      }));
-    } catch (e) {
-      logger.error(e.message);
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
+    if (!htmlEmailRequestBody) {
+      throw new Error('Missing request body');
     }
-  },
-);
+
+    const replacements = mailHelper.preProcessReplacements(htmlEmailRequestBody.replacements);
+    const data = { ...htmlEmailRequestBody, replacements };
+
+    await mailHelper.htmlEmail(data);
+
+    return Service.successResponse({
+      success: true,
+    });
+  } catch (e) {
+    logger.error(e.message);
+    throw Service.rejectResponse(
+      e.message || 'Invalid input',
+      e.status || 405,
+    );
+  }
+};
 /**
 * Plain text E-Mail
 * Sends a plain text E-Mail
@@ -51,26 +53,29 @@ const sendHtml = ({ htmlEmailRequestBody }) => new Promise(
 * plainTextEmailRequestBody PlainTextEmailRequestBody Plain Text Email Request Body
 * returns SuccessResponse
 * */
-const sendPlainText = ({ plainTextEmailRequestBody }) => new Promise(
-  async (resolve, reject) => {
-    const logger = loggerService.getMethodLogger('MailService', 'sendPlainText');
-    try {
-      logger.debug('Received new plain text email to be sent', plainTextEmailRequestBody);
+const sendPlainText = async (params) => {
+  const plainTextEmailRequestBody = params.plainTextEmailRequestBody || params.body;
+  const logger = loggerService.getMethodLogger('MailService', 'sendPlainText');
+  try {
+    logger.debug('Received new plain text email to be sent', plainTextEmailRequestBody);
 
-      await mailHelper.plainTextEmail(plainTextEmailRequestBody);
-
-      resolve(Service.successResponse({
-        success: true,
-      }));
-    } catch (e) {
-      logger.error(e.message);
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
+    if (!plainTextEmailRequestBody) {
+      throw new Error('Missing request body');
     }
-  },
-);
+
+    await mailHelper.plainTextEmail(plainTextEmailRequestBody);
+
+    return Service.successResponse({
+      success: true,
+    });
+  } catch (e) {
+    logger.error(e.message);
+    throw Service.rejectResponse(
+      e.message || 'Invalid input',
+      e.status || 405,
+    );
+  }
+};
 
 module.exports = {
   sendHtml,

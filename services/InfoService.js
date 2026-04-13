@@ -10,7 +10,7 @@
 
 /* eslint-disable no-unused-vars */
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs').promises;
 const Service = require('./Service');
 const { loggerService } = require('../helpers');
 
@@ -20,40 +20,30 @@ const { loggerService } = require('../helpers');
 *
 * returns Version
 * */
-const version = () => new Promise(
-  async (resolve, reject) => {
-    const logger = loggerService.getMethodLogger('InfoService', 'version');
-    try {
-      const filename = 'package.json';
-      const absPath = path.join(process.cwd(), filename);
+const version = async () => {
+  const logger = loggerService.getMethodLogger('InfoService', 'version');
+  try {
+    const filename = 'package.json';
+    const absPath = path.join(process.cwd(), filename);
 
-      fs.readFile(absPath, 'utf8', (e, data) => {
-        if (e) {
-          logger.error('readFile', e.message);
-          return reject(Service.rejectResponse(
-            e.message || 'Invalid input',
-            e.status || 500,
-          ));
-        }
-        data = JSON.parse(data);
-        const [major, minor, patch] = data.version.split('.');
-        const v = {
-          major: parseInt(major, 10),
-          minor: parseInt(minor, 10),
-          patch: parseInt(patch, 10),
-          version: data.version,
-        };
-        return resolve(Service.successResponse(v));
-      });
-    } catch (e) {
-      logger.error(e.message);
-      reject(Service.rejectResponse(
-        e.message || 'Invalid input',
-        e.status || 405,
-      ));
-    }
-  },
-);
+    const fileContent = await fs.readFile(absPath, 'utf8');
+    const data = JSON.parse(fileContent);
+    const [major, minor, patch] = data.version.split('.');
+    const v = {
+      major: parseInt(major, 10),
+      minor: parseInt(minor, 10),
+      patch: parseInt(patch, 10),
+      version: data.version,
+    };
+    return Service.successResponse(v);
+  } catch (e) {
+    logger.error(e.message);
+    throw Service.rejectResponse(
+      e.message || 'Invalid input',
+      e.status || 500,
+    );
+  }
+};
 
 module.exports = {
   version,

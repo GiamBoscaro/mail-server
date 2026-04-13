@@ -1,21 +1,22 @@
-FROM node:16
+FROM node:22-alpine
 
 ARG DEFAULT_PORT=3000
 
 ENV PORT $DEFAULT_PORT
 
+# Install dependencies for canvas/other native libs if needed, but for now just basic
+RUN apk add --no-cache bash
+
 # Create app directory
 WORKDIR /usr/src/app
 
 # Create the required folders
-RUN mkdir logs
+RUN mkdir -p logs uploaded_files tmp
 
 # Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
 COPY package*.json ./
 
-# Install dependencies
+# Install dependencies (only production for final image)
 RUN npm ci --only=production
 
 # Bundle app source

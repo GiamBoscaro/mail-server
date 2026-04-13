@@ -389,6 +389,7 @@ components:
       - to
       type: object
     PlainTextEmailRequestBody:
+      title: PlainTextEmailRequestBody
       allOf:
       - $ref: '#/components/schemas/EmailHeader'
       example:
@@ -403,6 +404,7 @@ components:
       - to
       type: object
     HtmlEmailRequestBody:
+      title: HtmlEmailRequestBody
       allOf:
       - $ref: '#/components/schemas/EmailHeader'
       example:

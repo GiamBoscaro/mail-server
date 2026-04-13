@@ -15,12 +15,10 @@ describe('version', () => {
     required: ['patch', 'minor', 'major', 'version'],
   };
 
-  test('Gets the current server version', async (done) => {
+  test('Gets the current server version', async () => {
     const { version } = require('../InfoService');
     const response = await version();
 
     expect(validator.validate(response.payload, schema)).toBe(true);
-
-    done();
   });
 });

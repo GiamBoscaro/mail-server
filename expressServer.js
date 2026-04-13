@@ -82,15 +82,26 @@ class ExpressServer {
         errors: err.errors || '',
       });
     });
-    http.createServer(this.app).listen(this.port);
-    console.log(`Listening on port ${this.port}`);
+    this.server = http.createServer(this.app);
+    this.server.listen(this.port, () => {
+      console.log(`Listening on port ${this.port}`);
+    });
   }
 
   async close() {
-    if (this.server !== undefined) {
-      await this.server.close();
-      console.log(`Server on port ${this.port} shut down`);
+    if (this.server) {
+      return new Promise((resolve, reject) => {
+        this.server.close((err) => {
+          if (err) {
+            console.error(`Error closing server: ${err.message}`);
+            return reject(err);
+          }
+          console.log(`Server on port ${this.port} shut down`);
+          return resolve();
+        });
+      });
     }
+    return Promise.resolve();
   }
 }
 

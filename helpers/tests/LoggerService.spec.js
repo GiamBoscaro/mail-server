@@ -15,97 +15,55 @@ const logger = LoggerFactory.buildLogger(defaultConfig);
 const service = new LoggerService(logger);
 
 describe('constructor', () => {
-  test('Istantiates a new LoggerService', (done) => {
-    try {
-      const logger = LoggerFactory.buildLogger(defaultConfig);
-      const service = new LoggerService(logger);
-      expect(typeof service).toBe('object');
-      expect(typeof service.getClassLogger).toBe('function');
-      expect(typeof service.getMethodLogger).toBe('function');
-      expect(typeof service.getClassLogger('class')).toBe('object');
-      expect(typeof service.getMethodLogger('class', 'method')).toBe('object');
-      done();
-    } catch (e) {
-      expect(e).toBeDefined();
-      done(e);
-    }
+  test('Istantiates a new LoggerService', () => {
+    const logger = LoggerFactory.buildLogger(defaultConfig);
+    const service = new LoggerService(logger);
+    expect(typeof service).toBe('object');
+    expect(typeof service.getClassLogger).toBe('function');
+    expect(typeof service.getMethodLogger).toBe('function');
+    expect(typeof service.getClassLogger('class')).toBe('object');
+    expect(typeof service.getMethodLogger('class', 'method')).toBe('object');
   });
 });
 
 describe('getClassLogger', () => {
-  test('Returns the class logger', (done) => {
-    try {
-      const classLogger = service.getClassLogger('Class');
-      classLogger.debug('Method', 'Message');
-      classLogger.error('Method', 'Message');
-      classLogger.http('Method', 'Message');
-      classLogger.info('Method', 'Message');
-      classLogger.silly('Method', 'Message');
-      classLogger.verbose('Method', 'Message');
-      classLogger.warn('Method', 'Message');
-      done();
-    } catch (e) {
-      expect(e).toBeDefined();
-      done(e);
-    }
+  test('Returns the class logger', () => {
+    const classLogger = service.getClassLogger('Class');
+    classLogger.debug('Method', 'Message');
+    classLogger.error('Method', 'Message');
+    classLogger.http('Method', 'Message');
+    classLogger.info('Method', 'Message');
+    classLogger.silly('Method', 'Message');
+    classLogger.verbose('Method', 'Message');
+    classLogger.warn('Method', 'Message');
   });
-  test('Logs with additional metadata', (done) => {
-    try {
-      const classLogger = service.getClassLogger('Class', { user: 'test123' });
-      classLogger.info('Method', 'Message');
-      done();
-    } catch (e) {
-      expect(e).toBeDefined();
-      done(e);
-    }
+  test('Logs with additional metadata', () => {
+    const classLogger = service.getClassLogger('Class', { user: 'test123' });
+    classLogger.info('Method', 'Message');
   });
-  test('Logs an object', (done) => {
-    try {
-      const classLogger = service.getClassLogger('Class', { user: 'test123' });
-      classLogger.info('Method', 'Message', { new: {}, old: {} });
-      done();
-    } catch (e) {
-      expect(e).toBeDefined();
-      done(e);
-    }
+  test('Logs an object', () => {
+    const classLogger = service.getClassLogger('Class', { user: 'test123' });
+    classLogger.info('Method', 'Message', { new: {}, old: {} });
   });
 });
 
 describe('getMethodLogger', () => {
-  test('Returns the class logger', (done) => {
-    try {
-      const methodLogger = service.getMethodLogger('Class', 'Method');
-      methodLogger.debug('Message');
-      methodLogger.error('Message');
-      methodLogger.http('Message');
-      methodLogger.info('Message');
-      methodLogger.silly('Message');
-      methodLogger.verbose('Message');
-      methodLogger.warn('Message');
-      done();
-    } catch (e) {
-      expect(e).toBeDefined();
-      done(e);
-    }
+  test('Returns the class logger', () => {
+    const methodLogger = service.getMethodLogger('Class', 'Method');
+    methodLogger.debug('Message');
+    methodLogger.error('Message');
+    methodLogger.http('Message');
+    methodLogger.info('Message');
+    methodLogger.silly('Message');
+    methodLogger.verbose('Message');
+    methodLogger.warn('Message');
   });
-  test('Logs with additional metadata', (done) => {
-    try {
-      const methodLogger = service.getMethodLogger('Class', 'Method', { user: 'test123' });
-      methodLogger.info('Message');
-      done();
-    } catch (e) {
-      expect(e).toBeDefined();
-      done(e);
-    }
+  test('Logs with additional metadata', () => {
+    const methodLogger = service.getMethodLogger('Class', 'Method', { user: 'test123' });
+    methodLogger.info('Message');
   });
-  test('Logs an object', (done) => {
-    try {
-      const methodLogger = service.getMethodLogger('Class', 'Method', { user: 'test123' });
-      methodLogger.info('Message', { new: {}, old: {} });
-      done();
-    } catch (e) {
-      expect(e).toBeDefined();
-      done(e);
-    }
+  test('Logs an object', () => {
+    const methodLogger = service.getMethodLogger('Class', 'Method', { user: 'test123' });
+    methodLogger.info('Message', { new: {}, old: {} });
   });
 });

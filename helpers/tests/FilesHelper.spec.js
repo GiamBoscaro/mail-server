@@ -4,7 +4,7 @@ const fs = require('fs');
 const helper = require('../files');
 
 describe('createFolder', () => {
-  test('Creates a new folder', (done) => {
+  test('Creates a new folder', () => {
     // Prepares test environment
     const directoryPath = path.join(process.cwd(), 'tests', 'tmp');
     try {
@@ -17,9 +17,8 @@ describe('createFolder', () => {
     expect(res).toBe(undefined);
     const exists = fs.existsSync(directoryPath);
     expect(exists).toBe(true);
-    done();
   });
-  test('Try to create a folder that already exist', (done) => {
+  test('Try to create a folder that already exist', () => {
     // Prepares test environment
     const directoryPath = path.join(process.cwd(), 'tests', 'tmp');
     try {
@@ -33,13 +32,12 @@ describe('createFolder', () => {
       helper.createFolder(directoryPath);
     } catch (e) {
       expect(e).toBeDefined();
-      done();
     }
   });
 });
 
 describe('writeFile', () => {
-  test('Write some content to a file', (done) => {
+  test('Write some content to a file', () => {
     const filePath = path.join(process.cwd(), 'tests', 'tmp', 'test.txt');
     try {
       fs.rmSync(filePath, { force: true });
@@ -52,12 +50,11 @@ describe('writeFile', () => {
     const content = helper.readFile(path.join(process.cwd(), 'tests', 'tmp', 'test.txt'));
     expect(content).toBeDefined();
     expect(content).toBe('This is a test file');
-    done();
   });
 });
 
 describe('readFile', () => {
-  test('Read the content of a file', (done) => {
+  test('Read the content of a file', () => {
     const filePath = path.join(process.cwd(), 'tests', 'tmp', 'test.txt');
     try {
       fs.rmSync(filePath, { force: true });
@@ -70,12 +67,11 @@ describe('readFile', () => {
     expect(typeof res).toBe('string');
     expect(res.toString()).toBe('This is a test file');
     fs.rmSync(filePath, { force: true });
-    done();
   });
 });
 
 describe('deleteFile', () => {
-  test('Delete a file', (done) => {
+  test('Delete a file', () => {
     const filePath = path.join(process.cwd(), 'tests', 'tmp', 'delete_this.txt');
     try {
       fs.rmSync(filePath, { force: true });
@@ -87,6 +83,5 @@ describe('deleteFile', () => {
     res = helper.deleteFile(filePath);
     expect(res).toBeDefined();
     expect(res).toBe(true);
-    done();
   });
 });
