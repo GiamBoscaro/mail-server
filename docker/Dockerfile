@@ -1,11 +1,8 @@
-FROM node:22-alpine
+FROM node:22
 
 ARG DEFAULT_PORT=3000
 
 ENV PORT $DEFAULT_PORT
-
-# Install dependencies for canvas/other native libs if needed, but for now just basic
-RUN apk add --no-cache bash
 
 # Create app directory
 WORKDIR /usr/src/app
